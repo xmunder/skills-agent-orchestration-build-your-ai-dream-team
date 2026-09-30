@@ -1,0 +1,36 @@
+{
+  "projects": [
+    {
+      "name": "Community Launchpad",
+      "owner": "Mona Lisa",
+      "status": "On track",
+      "recentActivity": "Updated the contributor onboarding flow 2 hours ago",
+      "priority": "High",
+      "summary": "Making it easier for first-time contributors to find a meaningful starting point."
+    },
+    {
+      "name": "Docs Refresh",
+      "owner": "Alex Chen",
+      "status": "In review",
+      "recentActivity": "Three navigation proposals are ready for feedback",
+      "priority": "Medium",
+      "summary": "Clarifying the docs journey so answers are easier to discover and maintain."
+    },
+    {
+      "name": "Release Observatory",
+      "owner": "Priya Shah",
+      "status": "At risk",
+      "recentActivity": "Waiting on performance data from the staging environment",
+      "priority": "Critical",
+      "summary": "Tracking release health in one calm, contributor-friendly view."
+    },
+    {
+      "name": "Accessibility Sweep",
+      "owner": "Jordan Lee",
+      "status": "On track",
+      "recentActivity": "Keyboard navigation checks passed for the latest component set",
+      "priority": "Medium",
+      "summary": "Building inclusive defaults into every surface before the next milestone."
+    }
+  ]
+}

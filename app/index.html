@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A focused pulse check for Mona's team projects." />
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="dashboard" aria-labelledby="page-title">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero__content">
+          <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Team operations / 09.30.26</p>
+          <h1 id="page-title">Project Pulse</h1>
+          <p class="hero__lede">A clear view of where Mona's team is moving, what needs attention, and how you can help.</p>
+        </div>
+        <div class="hero__signal" aria-label="Dashboard refresh status">
+          <span class="signal-ring" aria-hidden="true"></span>
+          <span><strong>Live signal</strong><small>Updated just now</small></span>
+        </div>
+      </section>
+
+      <section class="summary-strip" aria-label="Project summary">
+        <div class="summary-item"><span class="summary-item__label">Active projects</span><strong id="active-count">--</strong></div>
+        <div class="summary-item"><span class="summary-item__label">On track</span><strong id="on-track-count">--</strong></div>
+        <div class="summary-item"><span class="summary-item__label">Need attention</span><strong id="attention-count">--</strong></div>
+        <div class="summary-item summary-item--note"><span class="summary-item__label">Team note</span><strong>Small steps, visible progress.</strong></div>
+      </section>
+
+      <section class="projects-section" aria-labelledby="projects-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">The current landscape</p>
+            <h2 id="projects-heading">Projects in motion</h2>
+          </div>
+          <p id="project-count" class="section-heading__count">Loading projects...</p>
+        </div>
+        <div id="project-grid" class="project-grid" aria-live="polite">
+          <p class="loading-state">Reading the latest project signals...</p>
+        </div>
+      </section>
+    </main>
+
+    <template id="project-card-template">
+      <article class="project-card">
+        <div class="project-card__topline">
+          <span class="project-card__index"></span>
+          <span class="status-badge"></span>
+        </div>
+        <div class="project-card__body">
+          <h3 class="project-card__name"></h3>
+          <p class="project-card__summary"></p>
+        </div>
+        <dl class="project-card__details">
+          <div><dt>Owner</dt><dd class="project-card__owner"></dd></div>
+          <div><dt>Priority</dt><dd class="project-card__priority"></dd></div>
+        </dl>
+        <div class="project-card__activity">
+          <span class="activity-icon" aria-hidden="true">+</span>
+          <div><span class="activity-label">Recent activity</span><p class="project-card__activity-text"></p></div>
+        </div>
+      </article>
+    </template>
+
+    <script>
+      const projectGrid = document.querySelector('#project-grid');
+      const template = document.querySelector('#project-card-template');
+
+      const setText = (root, selector, value) => {
+        root.querySelector(selector).textContent = value;
+      };
+
+      const renderProjects = ({ projects }) => {
+        projectGrid.replaceChildren();
+        projects.forEach((project, index) => {
+          const card = template.content.cloneNode(true);
+          const cardRoot = card.querySelector('.project-card');
+          cardRoot.classList.add(`status-${project.status.toLowerCase().replaceAll(' ', '-')}`);
+          setText(card, '.project-card__index', String(index + 1).padStart(2, '0'));
+          setText(card, '.status-badge', project.status);
+          setText(card, '.project-card__name', project.name);
+          setText(card, '.project-card__summary', project.summary);
+          setText(card, '.project-card__owner', project.owner);
+          setText(card, '.project-card__priority', project.priority);
+          setText(card, '.project-card__activity-text', project.recentActivity);
+          projectGrid.append(card);
+        });
+
+        const attention = projects.filter(({ status }) => status === 'At risk').length;
+        const onTrack = projects.filter(({ status }) => status === 'On track').length;
+        document.querySelector('#active-count').textContent = projects.length;
+        document.querySelector('#on-track-count').textContent = onTrack;
+        document.querySelector('#attention-count').textContent = attention;
+        document.querySelector('#project-count').textContent = `${projects.length} signals to follow`;
+      };
+
+      fetch('project-data.json')
+        .then((response) => {
+          if (!response.ok) throw new Error('Project data could not be loaded.');
+          return response.json();
+        })
+        .then(renderProjects)
+        .catch((error) => {
+          projectGrid.innerHTML = `<p class="loading-state loading-state--error">${error.message}</p>`;
+        });
+    </script>
+  </body>
+</html>
